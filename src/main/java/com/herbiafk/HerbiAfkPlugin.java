@@ -1,5 +1,6 @@
 package com.herbiafk;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.inject.Provides;
 import javax.inject.Inject;
@@ -11,6 +12,7 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.VarbitChanged;
@@ -48,8 +50,22 @@ public class HerbiAfkPlugin extends Plugin
 
 	@Getter
 	private List<WorldPoint> pathLinePoints;
+	@Getter
+	private WorldPoint nextSearchSpot;
 
 	private boolean varbitChanged = false;
+
+	private static final List<WorldPoint> END_LOCATIONS = ImmutableList.of(
+			new WorldPoint(3693, 3798, 0),
+			new WorldPoint(3702, 3808, 0),
+			new WorldPoint(3703, 3826, 0),
+			new WorldPoint(3710, 3881, 0),
+			new WorldPoint(3700, 3877, 0),
+			new WorldPoint(3715, 3840, 0),
+			new WorldPoint(3751, 3849, 0),
+			new WorldPoint(3685, 3869, 0),
+			new WorldPoint(3681, 3863, 0)
+	);
 
 	@Override
 	protected void startUp() throws Exception
@@ -93,8 +109,11 @@ public class HerbiAfkPlugin extends Plugin
 
 		if (currentPathSize >= 1) {
 			WorldPoint startLocation, endLocation;
-
-			if (currentPathSize == 1) {
+			if (herbiboarPlugin.getFinishId() > 0) {
+				startLocation = HerbiboarSearchSpot.valueOf(currentPath.get(currentPathSize - 1).toString()).getLocation();
+				endLocation = END_LOCATIONS.get(herbiboarPlugin.getFinishId() - 1);
+			}
+			else if (currentPathSize == 1) {
 				startLocation = herbiboarPlugin.getStartPoint();
 				endLocation = HerbiboarSearchSpot.valueOf(currentPath.get(0).toString()).getLocation();
 			} else {
@@ -102,8 +121,17 @@ public class HerbiAfkPlugin extends Plugin
 				endLocation = HerbiboarSearchSpot.valueOf(currentPath.get(currentPathSize - 1).toString()).getLocation();
 			}
 
+			nextSearchSpot = endLocation;
 			pathLinePoints = Arrays.asList(startLocation, endLocation);
 		}
+	}
+
+	@Subscribe
+	public void onChatMessage(ChatMessage event)
+	{
+		//You stun the creature.
+		//GAMEMESSAGE
+		//Your herbiboar harvest count is:
 	}
 
 	public boolean isInHerbiboarArea() {
