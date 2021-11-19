@@ -23,6 +23,7 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.herbiboars.HerbiboarPlugin;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.util.Text;
 
 import java.util.*;
 
@@ -46,6 +47,9 @@ public class HerbiAfkPlugin extends Plugin
 	private HerbiAfkOverlay overlay;
 
 	@Inject
+	private HerbiAfkMinimapOverlay minimapOverlay;
+
+	@Inject
 	private HerbiboarPlugin herbiboarPlugin;
 
 	@Getter
@@ -67,25 +71,34 @@ public class HerbiAfkPlugin extends Plugin
 			new WorldPoint(3681, 3863, 0)
 	);
 
+	private static final String HERBI_STUN = "You stun the creature";
+
 	@Override
 	protected void startUp() throws Exception
 	{
 		overlayManager.add(overlay);
+		overlayManager.add(minimapOverlay);
 		log.info("Example started!");
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
-		log.info("Example stopped!");
+		overlayManager.remove(overlay);
+		overlayManager.remove(minimapOverlay);
+
+		resetTrailData();
 	}
 
 	@Subscribe
-	public void onGameStateChanged(GameStateChanged gameStateChanged)
+	public void onGameStateChanged(GameStateChanged event)
 	{
-		if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
+		switch (event.getGameState())
 		{
-			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Example says " + config.greeting(), null);
+			case HOPPING:
+			case LOGGING_IN:
+				resetTrailData();
+				break;
 		}
 	}
 
@@ -103,7 +116,7 @@ public class HerbiAfkPlugin extends Plugin
 		}
 	}
 
-	public void getTrailWorldPoints() {
+	private void getTrailWorldPoints() {
 		List<? extends Enum<?>> currentPath = herbiboarPlugin.getCurrentPath();
 		int currentPathSize = currentPath.size();
 
@@ -129,9 +142,18 @@ public class HerbiAfkPlugin extends Plugin
 	@Subscribe
 	public void onChatMessage(ChatMessage event)
 	{
-		//You stun the creature.
-		//GAMEMESSAGE
+		if (event.getType() == ChatMessageType.GAMEMESSAGE) {
+			String message = Text.sanitize(Text.removeTags(event.getMessage()));
+			if (message.contains(HERBI_STUN)) {
+				resetTrailData();
+			}
+		}
 		//Your herbiboar harvest count is:
+	}
+
+	private void resetTrailData() {
+		pathLinePoints = null;
+		nextSearchSpot = null;
 	}
 
 	public boolean isInHerbiboarArea() {
