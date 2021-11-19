@@ -42,21 +42,6 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 
 public class WorldLines
 {
-    public static void createWorldMapLines(Graphics2D graphics, Client client, List<WorldPoint> linePoints,
-                                           Color color)
-    {
-        Rectangle mapViewArea = QuestPerspective.getWorldMapClipArea(client);
-
-        for (int i = 0; i < linePoints.size() - 1; i++)
-        {
-            Point startPoint = QuestPerspective.mapWorldPointToGraphicsPoint(client, linePoints.get(i));
-            Point endPoint = QuestPerspective.mapWorldPointToGraphicsPoint(client, linePoints.get(i + 1));
-
-            WorldLines.renderWorldMapLine(graphics, client, mapViewArea, startPoint, endPoint,
-                    color);
-        }
-    }
-
     public static void createMinimapLines(Graphics2D graphics, Client client, List<WorldPoint> linePoints,
                                           Color color)
     {
@@ -102,22 +87,6 @@ public class WorldLines
 
             DirectionArrow.drawLine(graphics, line, color, bounds);
         }
-    }
-
-    public static void renderWorldMapLine(Graphics2D graphics, Client client, Rectangle mapViewArea, Point startPoint,
-                                          Point endPoint, Color color)
-    {
-        if (mapViewArea == null || startPoint == null || endPoint == null)
-        {
-            return;
-        }
-        if (!mapViewArea.contains(startPoint.getX(), startPoint.getY()) && !mapViewArea.contains(endPoint.getX(), endPoint.getY()))
-        {
-            return;
-        }
-
-        Line2D.Double line = new Line2D.Double(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
-        DirectionArrow.drawLine(graphics, line, color, QuestPerspective.getWorldMapClipArea(client));
     }
 
     public static Line2D.Double getWorldLines(@Nonnull Client client, @Nonnull LocalPoint startLocation, LocalPoint endLocation)

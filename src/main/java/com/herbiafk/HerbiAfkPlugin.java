@@ -137,7 +137,12 @@ public class HerbiAfkPlugin extends Plugin
 		}
 
 		if (config.pathRelativeToPlayer()) {
-			pathLinePoints.set(0, client.getLocalPlayer().getWorldLocation());
+			if (client.getLocalPlayer() != null) {
+				WorldPoint playerLoc = client.getLocalPlayer().getWorldLocation();
+				if (pathLinePoints != null) {
+					pathLinePoints.set(0, playerLoc);
+				}
+			}
 		}
 	}
 
@@ -149,7 +154,10 @@ public class HerbiAfkPlugin extends Plugin
 		WorldPoint endLocation = null;
 		if (herbiStunned) {
 			startLocation = END_LOCATIONS.get(finishedId - 1);
-			endLocation = getHerbiboarNpc().getWorldLocation();
+			NPC herbi = getHerbiboarNpc();
+			if (herbi != null) {
+				endLocation = herbi.getWorldLocation();
+			}
 		}
 		else if (currentPathSize >= 1) {
 			if (herbiboarPlugin.getFinishId() > 0) {
@@ -168,7 +176,9 @@ public class HerbiAfkPlugin extends Plugin
 
 		if (startLocation != null && endLocation != null) {
 			if (config.pathRelativeToPlayer()) {
-				startLocation = client.getLocalPlayer().getWorldLocation();
+				if (client.getLocalPlayer() != null) {
+					startLocation = client.getLocalPlayer().getWorldLocation();
+				}
 			}
 
 			nextSearchSpot = endLocation;

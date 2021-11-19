@@ -125,59 +125,6 @@ public class QuestPerspective
         return null;
     }
 
-    public static Rectangle getWorldMapClipArea(Client client)
-    {
-        Widget widget = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
-        if (widget == null)
-        {
-            return null;
-        }
-
-        return widget.getBounds();
-    }
-
-    public static Point mapWorldPointToGraphicsPoint(Client client, WorldPoint worldPoint)
-    {
-        RenderOverview ro = client.getRenderOverview();
-
-        if (!ro.getWorldMapData().surfaceContainsPosition(worldPoint.getX(), worldPoint.getY()))
-        {
-            return null;
-        }
-
-        float pixelsPerTile = ro.getWorldMapZoom();
-
-        Widget map = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
-        if (map != null)
-        {
-            Rectangle worldMapRect = map.getBounds();
-
-            int widthInTiles = (int) Math.ceil(worldMapRect.getWidth() / pixelsPerTile);
-            int heightInTiles = (int) Math.ceil(worldMapRect.getHeight() / pixelsPerTile);
-
-            Point worldMapPosition = ro.getWorldMapPosition();
-
-            //Offset in tiles from anchor sides
-            int yTileMax = worldMapPosition.getY() - heightInTiles / 2;
-            int yTileOffset = (yTileMax - worldPoint.getY() - 1) * -1;
-            int xTileOffset = worldPoint.getX() + widthInTiles / 2 - worldMapPosition.getX();
-
-            int xGraphDiff = ((int) (xTileOffset * pixelsPerTile));
-            int yGraphDiff = (int) (yTileOffset * pixelsPerTile);
-
-            //Center on tile.
-            yGraphDiff -= pixelsPerTile - Math.ceil(pixelsPerTile / 2);
-            xGraphDiff += pixelsPerTile - Math.ceil(pixelsPerTile / 2);
-
-            yGraphDiff = worldMapRect.height - yGraphDiff;
-            yGraphDiff += (int) worldMapRect.getY();
-            xGraphDiff += (int) worldMapRect.getX();
-
-            return new Point(xGraphDiff, yGraphDiff);
-        }
-        return null;
-    }
-
     public static Point getMinimapPoint(Client client, WorldPoint start, WorldPoint destination)
     {
         RenderOverview ro = client.getRenderOverview();
