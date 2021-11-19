@@ -3,8 +3,6 @@ package com.herbiafk;
 import lombok.Getter;
 import net.runelite.api.coords.WorldPoint;
 
-import java.util.Set;
-
 @Getter
 enum HerbiboarSearchSpot {
     // Wiki A location

@@ -58,6 +58,29 @@ public interface HerbiAfkConfig extends Config
 
 	@ConfigItem(
 			position = 5,
+			keyName = "showMiniMaplines",
+			name = "Display path lines on the minimap",
+			description = "Display the trail path lines on the minimap"
+	)
+	default boolean showMiniMaplines()
+	{
+		return true;
+	}
+
+	@Alpha
+	@ConfigItem(
+			position = 6,
+			keyName = "minimapPathColor",
+			name = "Minimap path lines color",
+			description = "Color of the trail path lines on the minimap."
+	)
+	default Color getMinimapPathColor()
+	{
+		return Color.CYAN;
+	}
+
+	@ConfigItem(
+			position = 7,
 			keyName = "highlightHerbiTile",
 			name = "Highlight herbiboar tile",
 			description = "Highlights herbiboar tile at the end of the trail."
@@ -68,7 +91,7 @@ public interface HerbiAfkConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 6,
+			position = 8,
 			keyName = "highlightHerbiHull",
 			name = "Highlight herbiboar hull",
 			description = "Highlights herbiboar hull at the end of the trail."
@@ -79,7 +102,7 @@ public interface HerbiAfkConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 7,
+			position = 9,
 			keyName = "highlightHerbiOutline",
 			name = "Highlight herbiboar outline",
 			description = "Highlights herbiboar outline at the end of the trail."
@@ -91,7 +114,7 @@ public interface HerbiAfkConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-			position = 8,
+			position = 10,
 			keyName = "herbiboarColor",
 			name = "Herbiboar highlight color",
 			description = "Color of the herbiboar highlight."
@@ -99,5 +122,16 @@ public interface HerbiAfkConfig extends Config
 	default Color getHerbiboarColor()
 	{
 		return Color.CYAN;
+	}
+
+	@ConfigItem(
+			position = 11,
+			keyName = "pathRelativeToPlayer",
+			name = "Path relative to player",
+			description = "Make the trail path line relative to the player."
+	)
+	default boolean pathRelativeToPlayer()
+	{
+		return true;
 	}
 }

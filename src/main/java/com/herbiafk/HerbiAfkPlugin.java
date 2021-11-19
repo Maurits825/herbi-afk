@@ -81,6 +81,10 @@ public class HerbiAfkPlugin extends Plugin
 	private static final String HERBI_KC = "Your herbiboar harvest count is:";
 	private static final String HERBIBOAR_NAME = "Herbiboar";
 
+	//TODO: show path to closest start?
+	//TODO: remove pick menu entry swapper stuff? is allowed?
+	//TODO: if outside of range, the line wont render
+	//TODO: unhighlight when the thing has nothing, game msg: nothing out of place or something
 	@Override
 	protected void startUp() throws Exception
 	{
@@ -131,6 +135,10 @@ public class HerbiAfkPlugin extends Plugin
 			npcOverlayService.rebuild();
 			herbiStunned = false;
 		}
+
+		if (config.pathRelativeToPlayer()) {
+			pathLinePoints.set(0, client.getLocalPlayer().getWorldLocation());
+		}
 	}
 
 	private void updateTrailWorldPoints() {
@@ -159,6 +167,10 @@ public class HerbiAfkPlugin extends Plugin
 		}
 
 		if (startLocation != null && endLocation != null) {
+			if (config.pathRelativeToPlayer()) {
+				startLocation = client.getLocalPlayer().getWorldLocation();
+			}
+
 			nextSearchSpot = endLocation;
 			pathLinePoints = Arrays.asList(startLocation, endLocation);
 		}
@@ -191,7 +203,7 @@ public class HerbiAfkPlugin extends Plugin
 	}
 
 	public final Function<NPC, HighlightedNpc> isHerbiboar = (n) -> {
-		boolean isHighlight = config.highlightHerbiHull() || config.highlightHerbiTile() || config.highlightHerbiTile();
+		boolean isHighlight = config.highlightHerbiHull() || config.highlightHerbiTile() || config.highlightHerbiOutline();
 		if (isHighlight && n.getName() != null && n.getName().equals(HERBIBOAR_NAME))
 		{
 			Color color =config.getHerbiboarColor();
@@ -201,7 +213,7 @@ public class HerbiAfkPlugin extends Plugin
 					.fillColor(ColorUtil.colorWithAlpha(color, color.getAlpha() / 12))
 					.hull(config.highlightHerbiHull())
 					.tile(config.highlightHerbiTile())
-					.outline(config.highlightHerbiTile())
+					.outline(config.highlightHerbiOutline())
 					.build();
 		}
 		return null;
