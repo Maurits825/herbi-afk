@@ -22,6 +22,7 @@ import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -56,9 +57,11 @@ public class HerbiAfkPlugin extends Plugin
 	private NpcOverlayService npcOverlayService;
 
 	@Getter
-	private List<WorldPoint> pathLinePoints;
+	private List<WorldPoint> pathLinePoints = new ArrayList<>();
 	@Getter
 	private WorldPoint nextSearchSpot;
+
+	private WorldPoint startLocation, endLocation;
 
 	private boolean varbitChanged = false;
 	private boolean herbiStunned = false;
@@ -80,11 +83,12 @@ public class HerbiAfkPlugin extends Plugin
 	private static final String HERBI_STUN = "You stun the creature";
 	private static final String HERBI_KC = "Your herbiboar harvest count is:";
 	private static final String HERBIBOAR_NAME = "Herbiboar";
+	private static final Integer PATH_LINE_DIVISION = 20;
 
 	//TODO: show path to closest start?
 	//TODO: remove pick menu entry swapper stuff? is allowed?
-	//TODO: if outside of range, the line wont render
 	//TODO: unhighlight when the thing has nothing, game msg: nothing out of place or something
+	//TODO: readme.md add recommend herbi plugin setting, mention it depends on it
 	@Override
 	protected void startUp() throws Exception
 	{
@@ -92,6 +96,8 @@ public class HerbiAfkPlugin extends Plugin
 		overlayManager.add(minimapOverlay);
 
 		npcOverlayService.registerHighlighter(isHerbiboar);
+
+		pathLinePoints = new ArrayList<>();
 	}
 
 	@Override
@@ -126,12 +132,12 @@ public class HerbiAfkPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event) {
 		if (varbitChanged) {
-			updateTrailWorldPoints();
+			updateTrailData();
 			varbitChanged = false;
 		}
 
 		if (herbiStunned) {
-			updateTrailWorldPoints();
+			updateTrailData();
 			npcOverlayService.rebuild();
 			herbiStunned = false;
 		}
@@ -140,50 +146,84 @@ public class HerbiAfkPlugin extends Plugin
 			if (client.getLocalPlayer() != null) {
 				WorldPoint playerLoc = client.getLocalPlayer().getWorldLocation();
 				if (pathLinePoints != null) {
-					pathLinePoints.set(0, playerLoc);
+					startLocation = playerLoc;
+					updatePathLinePoints(startLocation, endLocation);
 				}
 			}
 		}
 	}
 
-	private void updateTrailWorldPoints() {
+	private void updateTrailData() {
+		updateStartAndEndLocation();
+		if (startLocation != null && endLocation != null) {
+			updatePathLinePoints(startLocation, endLocation);
+		}
+	}
+
+	private void updateStartAndEndLocation() {
 		List<? extends Enum<?>> currentPath = herbiboarPlugin.getCurrentPath();
 		int currentPathSize = currentPath.size();
 
-		WorldPoint startLocation = null;
-		WorldPoint endLocation = null;
+		WorldPoint newStartLocation = null;
+		WorldPoint newEndLocation = null;
 		if (herbiStunned) {
-			startLocation = END_LOCATIONS.get(finishedId - 1);
+			newStartLocation = END_LOCATIONS.get(finishedId - 1);
 			NPC herbi = getHerbiboarNpc();
 			if (herbi != null) {
-				endLocation = herbi.getWorldLocation();
+				newEndLocation = herbi.getWorldLocation();
 			}
 		}
 		else if (currentPathSize >= 1) {
 			if (herbiboarPlugin.getFinishId() > 0) {
-				startLocation = HerbiboarSearchSpot.valueOf(currentPath.get(currentPathSize - 1).toString()).getLocation();
+				newStartLocation = HerbiboarSearchSpot.valueOf(currentPath.get(currentPathSize - 1).toString()).getLocation();
 				finishedId = herbiboarPlugin.getFinishId();
-				endLocation = END_LOCATIONS.get(finishedId - 1);
+				newEndLocation = END_LOCATIONS.get(finishedId - 1);
 			}
 			else if (currentPathSize == 1) {
-				startLocation = herbiboarPlugin.getStartPoint();
-				endLocation = HerbiboarSearchSpot.valueOf(currentPath.get(0).toString()).getLocation();
+				newStartLocation = herbiboarPlugin.getStartPoint();
+				newEndLocation = HerbiboarSearchSpot.valueOf(currentPath.get(0).toString()).getLocation();
 			} else {
-				startLocation = HerbiboarSearchSpot.valueOf(currentPath.get(currentPathSize - 2).toString()).getLocation();
-				endLocation = HerbiboarSearchSpot.valueOf(currentPath.get(currentPathSize - 1).toString()).getLocation();
+				newStartLocation = HerbiboarSearchSpot.valueOf(currentPath.get(currentPathSize - 2).toString()).getLocation();
+				newEndLocation = HerbiboarSearchSpot.valueOf(currentPath.get(currentPathSize - 1).toString()).getLocation();
 			}
 		}
 
-		if (startLocation != null && endLocation != null) {
+		if (newStartLocation != null && newEndLocation != null) {
 			if (config.pathRelativeToPlayer()) {
 				if (client.getLocalPlayer() != null) {
-					startLocation = client.getLocalPlayer().getWorldLocation();
+					newStartLocation = client.getLocalPlayer().getWorldLocation();
 				}
 			}
 
-			nextSearchSpot = endLocation;
-			pathLinePoints = Arrays.asList(startLocation, endLocation);
+			nextSearchSpot = newEndLocation;
+
+			startLocation = newStartLocation;
+			endLocation = newEndLocation;
 		}
+	}
+
+	private void updatePathLinePoints(WorldPoint start, WorldPoint end) {
+		double angle = Math.atan2((end.getY()-start.getY()), (end.getX()-start.getX()));
+
+		int deltaX = (int)(PATH_LINE_DIVISION * Math.cos(angle));
+		int deltaY = (int)(PATH_LINE_DIVISION * Math.sin(angle));
+
+		int currentX = start.getX();
+		int currentY = start.getY();
+
+		pathLinePoints.clear();
+		pathLinePoints.add(start);
+
+		double distance = Math.sqrt(Math.pow(end.getX()-start.getX(), 2) + Math.pow(end.getY()-start.getY(), 2));
+		int divisions = (int)(distance / PATH_LINE_DIVISION);
+
+		for (int i = 0; i < divisions; i++) {
+			currentX += deltaX;
+			currentY += deltaY;
+			pathLinePoints.add(new WorldPoint(currentX, currentY, 0));
+		}
+
+		pathLinePoints.add(end);
 	}
 
 	@Subscribe
@@ -230,8 +270,10 @@ public class HerbiAfkPlugin extends Plugin
 	};
 
 	private void resetTrailData() {
-		pathLinePoints = null;
+		pathLinePoints.clear();
 		nextSearchSpot = null;
+		startLocation = null;
+		endLocation = null;
 		varbitChanged = false;
 		herbiStunned = false;
 		finishedId = -1;
