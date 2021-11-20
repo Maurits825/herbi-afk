@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.herbiafk;
+package com.herbiafk.QuestHelperTools;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -30,6 +30,7 @@ import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.util.List;
 import javax.annotation.Nonnull;
+
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
 import net.runelite.api.Perspective;
