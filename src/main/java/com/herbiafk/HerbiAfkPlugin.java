@@ -65,6 +65,7 @@ public class HerbiAfkPlugin extends Plugin
 
 	private boolean varbitChanged = false;
 	private boolean herbiStunned = false;
+	private boolean isHuntingHerbi = false;
 
 	private int finishedId = -1;
 
@@ -80,12 +81,19 @@ public class HerbiAfkPlugin extends Plugin
 			new WorldPoint(3681, 3863, 0)
 	);
 
+	private static final List<WorldPoint> START_LOCATIONS = ImmutableList.of(
+			new WorldPoint(3686, 3870, 0),
+			new WorldPoint(3751, 3850, 0),
+			new WorldPoint(3695, 3800, 0),
+			new WorldPoint(3704, 3810, 0),
+			new WorldPoint(3705, 3830, 0)
+	);
+
 	private static final String HERBI_STUN = "You stun the creature";
 	private static final String HERBI_KC = "Your herbiboar harvest count is:";
 	private static final String HERBIBOAR_NAME = "Herbiboar";
 	private static final Integer PATH_LINE_DIVISION = 20;
-
-	//TODO: show path to closest start?
+	
 	//TODO: remove pick menu entry swapper stuff? is allowed?
 	//TODO: unhighlight when the thing has nothing, game msg: nothing out of place or something
 	//TODO: readme.md add recommend herbi plugin setting, mention it depends on it
@@ -131,6 +139,10 @@ public class HerbiAfkPlugin extends Plugin
 
 	@Subscribe
 	public void onGameTick(GameTick event) {
+		if (!isInHerbiboarArea()) {
+			return;
+		}
+
 		if (varbitChanged) {
 			updateTrailData();
 			varbitChanged = false;
@@ -142,13 +154,20 @@ public class HerbiAfkPlugin extends Plugin
 			herbiStunned = false;
 		}
 
-		if (config.pathRelativeToPlayer()) {
+		if (!isHuntingHerbi) {
 			if (client.getLocalPlayer() != null) {
-				WorldPoint playerLoc = client.getLocalPlayer().getWorldLocation();
-				if (pathLinePoints != null) {
-					startLocation = playerLoc;
-					updatePathLinePoints(startLocation, endLocation);
-				}
+				startLocation = client.getLocalPlayer().getWorldLocation();
+			}
+			endLocation = getNearestStartLocation();
+			if (endLocation != null) {
+				updatePathLinePoints(startLocation, endLocation);
+			}
+		}
+
+		if (config.pathRelativeToPlayer()) {
+			if (client.getLocalPlayer() != null && pathLinePoints != null) {
+				startLocation = client.getLocalPlayer().getWorldLocation();
+				updatePathLinePoints(startLocation, endLocation);
 			}
 		}
 	}
@@ -166,6 +185,7 @@ public class HerbiAfkPlugin extends Plugin
 
 		WorldPoint newStartLocation = null;
 		WorldPoint newEndLocation = null;
+
 		if (herbiStunned) {
 			newStartLocation = END_LOCATIONS.get(finishedId - 1);
 			NPC herbi = getHerbiboarNpc();
@@ -174,6 +194,7 @@ public class HerbiAfkPlugin extends Plugin
 			}
 		}
 		else if (currentPathSize >= 1) {
+			isHuntingHerbi = true;
 			if (herbiboarPlugin.getFinishId() > 0) {
 				newStartLocation = HerbiboarSearchSpot.valueOf(currentPath.get(currentPathSize - 1).toString()).getLocation();
 				finishedId = herbiboarPlugin.getFinishId();
@@ -202,7 +223,41 @@ public class HerbiAfkPlugin extends Plugin
 		}
 	}
 
+	private WorldPoint getNearestStartLocation() {
+		WorldPoint neartestPoint = null;
+		WorldPoint player = null;
+
+		if (client.getLocalPlayer() != null) {
+			player = client.getLocalPlayer().getWorldLocation();
+		}
+		if (player == null) {
+			 return null;
+		}
+
+		double shortestDistance = Double.MAX_VALUE;
+		for (WorldPoint startPoint: START_LOCATIONS) {
+			double distance = player.distanceTo2D(startPoint);
+			if (distance < shortestDistance) {
+				neartestPoint = startPoint;
+				shortestDistance = distance;
+			}
+		}
+
+		return  neartestPoint;
+	}
+
 	private void updatePathLinePoints(WorldPoint start, WorldPoint end) {
+		double distance = start.distanceTo2D(end);
+		int divisions = (int)(distance / PATH_LINE_DIVISION);
+
+		pathLinePoints.clear();
+		pathLinePoints.add(start);
+
+		if (divisions == 0) {
+			pathLinePoints.add(end);
+			return;
+		}
+
 		double angle = Math.atan2((end.getY()-start.getY()), (end.getX()-start.getX()));
 
 		int deltaX = (int)(PATH_LINE_DIVISION * Math.cos(angle));
@@ -210,12 +265,6 @@ public class HerbiAfkPlugin extends Plugin
 
 		int currentX = start.getX();
 		int currentY = start.getY();
-
-		pathLinePoints.clear();
-		pathLinePoints.add(start);
-
-		double distance = Math.sqrt(Math.pow(end.getX()-start.getX(), 2) + Math.pow(end.getY()-start.getY(), 2));
-		int divisions = (int)(distance / PATH_LINE_DIVISION);
 
 		for (int i = 0; i < divisions; i++) {
 			currentX += deltaX;
@@ -276,6 +325,7 @@ public class HerbiAfkPlugin extends Plugin
 		endLocation = null;
 		varbitChanged = false;
 		herbiStunned = false;
+		isHuntingHerbi = false;
 		finishedId = -1;
 	}
 
