@@ -52,5 +52,4 @@ enum HerbiboarSearchSpot {
     HerbiboarSearchSpot(WorldPoint location) {
         this.location = location;
     }
-
 }

@@ -23,7 +23,6 @@ import net.runelite.client.util.Text;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -94,9 +93,6 @@ public class HerbiAfkPlugin extends Plugin
 	private static final String HERBIBOAR_NAME = "Herbiboar";
 	private static final Integer PATH_LINE_DIVISION = 20;
 	
-	//TODO: remove pick menu entry swapper stuff? is allowed?
-	//TODO: unhighlight when the thing has nothing, game msg: nothing out of place or something
-	//TODO: readme.md add recommend herbi plugin setting, mention it depends on it
 	@Override
 	protected void startUp() throws Exception
 	{
@@ -305,7 +301,7 @@ public class HerbiAfkPlugin extends Plugin
 		boolean isHighlight = config.highlightHerbiHull() || config.highlightHerbiTile() || config.highlightHerbiOutline();
 		if (isHighlight && n.getName() != null && n.getName().equals(HERBIBOAR_NAME))
 		{
-			Color color =config.getHerbiboarColor();
+			Color color = config.getHerbiboarColor();
 			return HighlightedNpc.builder()
 					.npc(n)
 					.highlightColor(color)
