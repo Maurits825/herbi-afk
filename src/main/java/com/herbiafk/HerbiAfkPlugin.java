@@ -91,6 +91,7 @@ public class HerbiAfkPlugin extends Plugin
 	private static final String HERBI_STUN = "You stun the creature";
 	private static final String HERBI_KC = "Your herbiboar harvest count is:";
 	private static final String HERBIBOAR_NAME = "Herbiboar";
+	private static final String HERBI_CIRCLES = "The creature has successfully confused you with its tracks, leading you round in circles";
 	private static final Integer PATH_LINE_DIVISION = 20;
 	
 	@Override
@@ -279,7 +280,7 @@ public class HerbiAfkPlugin extends Plugin
 			if (message.contains(HERBI_STUN)) {
 				herbiStunned = true;
 			}
-			else if (message.contains(HERBI_KC)) {
+			else if (message.contains(HERBI_KC) || message.contains(HERBI_CIRCLES)) {
 				resetTrailData();
 			}
 		}
