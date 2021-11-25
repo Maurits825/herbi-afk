@@ -98,7 +98,7 @@ public class HerbiAfkPlugin extends Plugin
 	private static final String HERBI_KC = "Your herbiboar harvest count is:";
 	private static final String HERBIBOAR_NAME = "Herbiboar";
 	private static final String HERBI_CIRCLES = "The creature has successfully confused you with its tracks, leading you round in circles";
-	private static final Integer PATH_LINE_DIVISION = 20;
+	private static final Integer PATH_LINE_DIVISION = 10;
 
 	@Override
 	protected void startUp() throws Exception
@@ -158,6 +158,11 @@ public class HerbiAfkPlugin extends Plugin
 				endLocation = getNearestStartLocation();
 				if (endLocation != null) {
 					updatePathLinePoints(startLocation, endLocation);
+				}
+
+				if (varbitChanged) {
+					updateTrailData();
+					varbitChanged = false;
 				}
 				break;
 
@@ -264,29 +269,27 @@ public class HerbiAfkPlugin extends Plugin
 		return  neartestPoint;
 	}
 
-	//TODO make PATH_LINE_DIVISION = 10?
-	//TODO make is smoother also, based on divisions
 	private void updatePathLinePoints(WorldPoint start, WorldPoint end) {
 		double distance = start.distanceTo2D(end);
-		int divisions = (int)(distance / PATH_LINE_DIVISION);
+		int divisions = (int)Math.ceil(distance / PATH_LINE_DIVISION);
 
 		pathLinePoints.clear();
 		pathLinePoints.add(start);
 
-		if (divisions == 0) {
+		if (divisions == 1) {
 			pathLinePoints.add(end);
 			return;
 		}
 
 		double angle = Math.atan2((end.getY()-start.getY()), (end.getX()-start.getX()));
-
-		int deltaX = (int)(PATH_LINE_DIVISION * Math.cos(angle));
-		int deltaY = (int)(PATH_LINE_DIVISION * Math.sin(angle));
+		double deltaH = distance / divisions;
+		int deltaX = (int)(deltaH * Math.cos(angle));
+		int deltaY = (int)(deltaH * Math.sin(angle));
 
 		int currentX = start.getX();
 		int currentY = start.getY();
 
-		for (int i = 0; i < divisions; i++) {
+		for (int i = 1; i < divisions; i++) {
 			currentX += deltaX;
 			currentY += deltaY;
 			pathLinePoints.add(new WorldPoint(currentX, currentY, 0));
