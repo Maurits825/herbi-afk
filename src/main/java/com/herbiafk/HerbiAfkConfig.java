@@ -36,8 +36,8 @@ public interface HerbiAfkConfig extends Config
 	@ConfigItem(
 			position = 3,
 			keyName = "showMiniMapArrow",
-			name = "Display arrow on the minimap",
-			description = "Choose whether a flashing arrows points to the next search spot."
+			name = "Show arrow on the minimap",
+			description = "Show an arrow on the minimap to the next search spot."
 	)
 	default boolean showMiniMapArrow()
 	{
@@ -59,8 +59,8 @@ public interface HerbiAfkConfig extends Config
 	@ConfigItem(
 			position = 5,
 			keyName = "showMiniMaplines",
-			name = "Display path lines on the minimap",
-			description = "Display the trail path lines on the minimap"
+			name = "Show path lines on the minimap",
+			description = "Show the trail path lines on the minimap."
 	)
 	default boolean showMiniMaplines()
 	{
