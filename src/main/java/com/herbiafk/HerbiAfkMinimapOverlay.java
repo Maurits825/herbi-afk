@@ -30,8 +30,8 @@ public class HerbiAfkMinimapOverlay extends Overlay {
             return null;
         }
 
-        if (config.showMiniMapArrow() && plugin.getNextSearchSpot() != null) {
-            DirectionArrow.renderMinimapArrow(graphics, plugin.getClient(), plugin.getNextSearchSpot(), config.getArrowColor());
+        if (config.showMiniMapArrow() && plugin.getEndLocation() != null) {
+            DirectionArrow.renderMinimapArrow(graphics, plugin.getClient(), plugin.getEndLocation(), config.getArrowColor());
         }
 
         if (config.showMiniMaplines() && plugin.getPathLinePoints() != null) {
