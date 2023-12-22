@@ -67,7 +67,8 @@ public class HerbiAfkPlugin extends Plugin
 	@Getter
 	private WorldPoint startLocation, endLocation;
 
-	private enum HerbiState {
+	private enum HerbiState
+	{
 		IDLE,
 		FINDING_START,
 		HUNTING,
@@ -128,35 +129,49 @@ public class HerbiAfkPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGameTick(GameTick event) {
-		if (!isInHerbiboarArea()) {
+	public void onGameTick(GameTick event)
+	{
+		if (!isInHerbiboarArea())
+		{
 			herbiState = HerbiState.IDLE;
 			return;
 		}
 
-		if (client.getLocalPlayer() == null) return;
+		if (client.getLocalPlayer() == null)
+		{
+			return;
+		}
 
 		WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
 
-		if (varbitChanged) {
+		if (varbitChanged)
+		{
 			updateStartAndEndLocation();
 			varbitChanged = false;
 		}
 
-		switch (herbiState) {
+		switch (herbiState)
+		{
 			case FINDING_START:
 				startLocation = playerLocation;
 				endLocation = Utils.getNearestStartLocation(playerLocation);
 				break;
 
 			case HUNTING:
-				if (config.pathRelativeToPlayer()) startLocation = playerLocation;
+				if (config.pathRelativeToPlayer())
+				{
+					startLocation = playerLocation;
+				}
+
 				break;
 
 			case STUNNED:
 				startLocation = config.pathRelativeToPlayer() ? playerLocation : HerbiAfkData.END_LOCATIONS.get(finishedId - 1);
 				WorldPoint herbiLocation = getHerbiboarLocation();
-				if (herbiLocation != null) endLocation = herbiLocation;
+				if (herbiLocation != null)
+				{
+					endLocation = herbiLocation;
+				}
 				npcOverlayService.rebuild();
 				break;
 
@@ -164,28 +179,37 @@ public class HerbiAfkPlugin extends Plugin
 				break;
 		}
 
-		if (startLocation != null && endLocation != null) {
+		if (startLocation != null && endLocation != null)
+		{
 			pathLinePoints = Utils.getPathLinePoints(startLocation, endLocation);
 		}
 	}
 
-	private void updateStartAndEndLocation() {
+	private void updateStartAndEndLocation()
+	{
 		List<? extends Enum<?>> currentPath = herbiboarPlugin.getCurrentPath();
 		int currentPathSize = currentPath.size();
-		if (currentPathSize < 1) return;
+		if (currentPathSize < 1)
+		{
+			return;
+		}
 
 		WorldPoint newStartLocation;
 		WorldPoint newEndLocation;
 
-		if (herbiboarPlugin.getFinishId() > 0) {
+		if (herbiboarPlugin.getFinishId() > 0)
+		{
 			newStartLocation = HerbiboarSearchSpot.valueOf(currentPath.get(currentPathSize - 1).toString()).getLocation();
 			finishedId = herbiboarPlugin.getFinishId();
 			newEndLocation = HerbiAfkData.END_LOCATIONS.get(finishedId - 1);
 		}
-		else if (currentPathSize == 1) {
+		else if (currentPathSize == 1)
+		{
 			newStartLocation = herbiboarPlugin.getStartPoint();
 			newEndLocation = HerbiboarSearchSpot.valueOf(currentPath.get(0).toString()).getLocation();
-		} else {
+		}
+		else
+		{
 			newStartLocation = HerbiboarSearchSpot.valueOf(currentPath.get(currentPathSize - 2).toString()).getLocation();
 			newEndLocation = HerbiboarSearchSpot.valueOf(currentPath.get(currentPathSize - 1).toString()).getLocation();
 		}
@@ -199,12 +223,15 @@ public class HerbiAfkPlugin extends Plugin
 	@Subscribe
 	public void onChatMessage(ChatMessage event)
 	{
-		if (event.getType() == ChatMessageType.GAMEMESSAGE) {
+		if (event.getType() == ChatMessageType.GAMEMESSAGE)
+		{
 			String message = Text.sanitize(Text.removeTags(event.getMessage()));
-			if (message.contains(HERBI_STUN)) {
+			if (message.contains(HERBI_STUN))
+			{
 				herbiState = HerbiState.STUNNED;
 			}
-			else if (message.contains(HERBI_KC) || message.contains(HERBI_CIRCLES)) {
+			else if (message.contains(HERBI_KC) || message.contains(HERBI_CIRCLES))
+			{
 				resetTrailData();
 				herbiState = HerbiState.FINDING_START;
 			}
@@ -214,16 +241,25 @@ public class HerbiAfkPlugin extends Plugin
 	@Subscribe
 	public void onMenuEntryAdded(MenuEntryAdded event)
 	{
-		if (!isInHerbiboarArea()) return;
+		if (!isInHerbiboarArea())
+		{
+			return;
+		}
 
-		if (config.dynamicMenuEntrySwap()) swapTrailMenuEntries(event);
-		if (config.npcMenuEntrySwap()) hideNpcMenuEntries(event);
+		if (config.dynamicMenuEntrySwap())
+		{
+			swapTrailMenuEntries(event);
+		}
+		if (config.npcMenuEntrySwap())
+		{
+			hideNpcMenuEntries(event);
+		}
 	}
 
 	private void swapTrailMenuEntries(MenuEntryAdded event)
 	{
 		String target = event.getTarget();
-		for(String menuTarget : HerbiAfkData.TRAIL_MENU_ENTRY_TARGETS)
+		for (String menuTarget : HerbiAfkData.TRAIL_MENU_ENTRY_TARGETS)
 		{
 			if (target.contains(menuTarget))
 			{
@@ -252,7 +288,7 @@ public class HerbiAfkPlugin extends Plugin
 	private void hideNpcMenuEntries(MenuEntryAdded event)
 	{
 		String target = event.getTarget();
-		for(String menuTarget : HerbiAfkData.NPC_MENU_ENTRY_TARGETS)
+		for (String menuTarget : HerbiAfkData.NPC_MENU_ENTRY_TARGETS)
 		{
 			if (target.contains(menuTarget))
 			{
@@ -272,11 +308,15 @@ public class HerbiAfkPlugin extends Plugin
 		}
 	}
 
-	private WorldPoint getHerbiboarLocation() {
+	private WorldPoint getHerbiboarLocation()
+	{
 		final NPC[] cachedNPCs = client.getCachedNPCs();
-		for (NPC npc : cachedNPCs) {
-			if (npc != null) {
-				if (npc.getName() != null && npc.getName().equals(HERBIBOAR_NAME)) {
+		for (NPC npc : cachedNPCs)
+		{
+			if (npc != null)
+			{
+				if (npc.getName() != null && npc.getName().equals(HERBIBOAR_NAME))
+				{
 					return npc.getWorldLocation();
 				}
 			}
@@ -290,18 +330,19 @@ public class HerbiAfkPlugin extends Plugin
 		{
 			Color color = config.getHerbiboarColor();
 			return HighlightedNpc.builder()
-					.npc(n)
-					.highlightColor(color)
-					.fillColor(ColorUtil.colorWithAlpha(color, color.getAlpha() / 12))
-					.hull(config.highlightHerbiHull())
-					.tile(config.highlightHerbiTile())
-					.outline(config.highlightHerbiOutline())
-					.build();
+				.npc(n)
+				.highlightColor(color)
+				.fillColor(ColorUtil.colorWithAlpha(color, color.getAlpha() / 12))
+				.hull(config.highlightHerbiHull())
+				.tile(config.highlightHerbiTile())
+				.outline(config.highlightHerbiOutline())
+				.build();
 		}
 		return null;
 	};
 
-	private void resetTrailData() {
+	private void resetTrailData()
+	{
 		pathLinePoints.clear();
 
 		startLocation = null;
@@ -310,7 +351,8 @@ public class HerbiAfkPlugin extends Plugin
 		finishedId = -1;
 	}
 
-	public boolean isInHerbiboarArea() {
+	public boolean isInHerbiboarArea()
+	{
 		return herbiboarPlugin.isInHerbiboarArea();
 	}
 
