@@ -7,11 +7,13 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -205,6 +207,42 @@ public class HerbiAfkPlugin extends Plugin
 			else if (message.contains(HERBI_KC) || message.contains(HERBI_CIRCLES)) {
 				resetTrailData();
 				herbiState = HerbiState.FINDING_START;
+			}
+		}
+	}
+
+	@Subscribe
+	public void onMenuEntryAdded(MenuEntryAdded event)
+	{
+		if (!isInHerbiboarArea()) return;
+
+		if (config.dynamicMenuEntrySwap()) swapTrailMenuEntries(event);
+
+	}
+
+	private void swapTrailMenuEntries(MenuEntryAdded event)
+	{
+		String target = event.getTarget();
+		for(String menuTarget : HerbiAfkData.MENU_ENTRY_TARGETS)
+		{
+			if (target.contains(menuTarget))
+			{
+				MenuEntry entry = event.getMenuEntry();
+				WorldPoint entryTargetPoint = WorldPoint.fromScene(client, entry.getParam0(), entry.getParam1(), client.getPlane());
+
+				switch (herbiState) {
+					case FINDING_START:
+					case HUNTING:
+						if (!entryTargetPoint.equals(endLocation)) {
+							entry.setDeprioritized(true);
+						}
+						break;
+					case STUNNED:
+						entry.setDeprioritized(true);
+						break;
+				}
+
+				return;
 			}
 		}
 	}

@@ -134,4 +134,15 @@ public interface HerbiAfkConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+			position = 12,
+			keyName = "dynamicMenuEntrySwap",
+			name = "Dynamically swap trail menu entries",
+			description = "Swap menu entries to only make the correct trail clickable."
+	)
+	default boolean dynamicMenuEntrySwap()
+	{
+		return true;
+	}
 }

@@ -25,4 +25,8 @@ public class HerbiAfkData {
             new WorldPoint(3685, 3869, 0),
             new WorldPoint(3681, 3863, 0)
     );
+
+    public static final String[] MENU_ENTRY_TARGETS = new String[]{
+            "Tunnel", "Mushroom", "Smelly mushroom", "Muddy patch", "Seaweed", "Rock", "Driftwood"
+    };
 }
