@@ -145,4 +145,15 @@ public interface HerbiAfkConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+			position = 13,
+			keyName = "npcMenuEntrySwap",
+			name = "Hide fossil island npcs menu entries",
+			description = "Hide fungi, zygomite and crab interaction menus."
+	)
+	default boolean npcMenuEntrySwap()
+	{
+		return true;
+	}
 }

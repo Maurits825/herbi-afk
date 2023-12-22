@@ -217,26 +217,51 @@ public class HerbiAfkPlugin extends Plugin
 		if (!isInHerbiboarArea()) return;
 
 		if (config.dynamicMenuEntrySwap()) swapTrailMenuEntries(event);
-
+		if (config.npcMenuEntrySwap()) hideNpcMenuEntries(event);
 	}
 
 	private void swapTrailMenuEntries(MenuEntryAdded event)
 	{
 		String target = event.getTarget();
-		for(String menuTarget : HerbiAfkData.MENU_ENTRY_TARGETS)
+		for(String menuTarget : HerbiAfkData.TRAIL_MENU_ENTRY_TARGETS)
 		{
 			if (target.contains(menuTarget))
 			{
 				MenuEntry entry = event.getMenuEntry();
 				WorldPoint entryTargetPoint = WorldPoint.fromScene(client, entry.getParam0(), entry.getParam1(), client.getPlane());
 
-				switch (herbiState) {
+				switch (herbiState)
+				{
 					case FINDING_START:
 					case HUNTING:
-						if (!entryTargetPoint.equals(endLocation)) {
+						if (!entryTargetPoint.equals(endLocation))
+						{
 							entry.setDeprioritized(true);
 						}
 						break;
+					case STUNNED:
+						entry.setDeprioritized(true);
+						break;
+				}
+
+				return;
+			}
+		}
+	}
+
+	private void hideNpcMenuEntries(MenuEntryAdded event)
+	{
+		String target = event.getTarget();
+		for(String menuTarget : HerbiAfkData.NPC_MENU_ENTRY_TARGETS)
+		{
+			if (target.contains(menuTarget))
+			{
+				MenuEntry entry = event.getMenuEntry();
+
+				switch (herbiState)
+				{
+					case FINDING_START:
+					case HUNTING:
 					case STUNNED:
 						entry.setDeprioritized(true);
 						break;
