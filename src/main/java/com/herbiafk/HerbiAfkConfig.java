@@ -11,10 +11,10 @@ import java.awt.Color;
 public interface HerbiAfkConfig extends Config
 {
 	@ConfigItem(
-			position = 1,
-			keyName = "showPathLine",
-			name = "Show path lines",
-			description = "Show trail path lines on the world."
+		position = 1,
+		keyName = "showPathLine",
+		name = "Show path lines",
+		description = "Show trail path lines on the world."
 	)
 	default boolean showPathLine()
 	{
@@ -23,10 +23,10 @@ public interface HerbiAfkConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-			position = 2,
-			keyName = "lineColor",
-			name = "Path line color",
-			description = "Color of the trail path lines."
+		position = 2,
+		keyName = "lineColor",
+		name = "Path line color",
+		description = "Color of the trail path lines."
 	)
 	default Color getLineColor()
 	{
@@ -34,10 +34,10 @@ public interface HerbiAfkConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 3,
-			keyName = "showMiniMapArrow",
-			name = "Show arrow on the minimap",
-			description = "Show an arrow on the minimap to the next search spot."
+		position = 3,
+		keyName = "showMiniMapArrow",
+		name = "Show arrow on the minimap",
+		description = "Show an arrow on the minimap to the next search spot."
 	)
 	default boolean showMiniMapArrow()
 	{
@@ -46,10 +46,10 @@ public interface HerbiAfkConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-			position = 4,
-			keyName = "arrowColor",
-			name = "Minimap arrow color",
-			description = "Color of the arrow on the minimap."
+		position = 4,
+		keyName = "arrowColor",
+		name = "Minimap arrow color",
+		description = "Color of the arrow on the minimap."
 	)
 	default Color getArrowColor()
 	{
@@ -57,10 +57,10 @@ public interface HerbiAfkConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 5,
-			keyName = "showMiniMaplines",
-			name = "Show path lines on the minimap",
-			description = "Show the trail path lines on the minimap."
+		position = 5,
+		keyName = "showMiniMaplines",
+		name = "Show path lines on the minimap",
+		description = "Show the trail path lines on the minimap."
 	)
 	default boolean showMiniMaplines()
 	{
@@ -69,10 +69,10 @@ public interface HerbiAfkConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-			position = 6,
-			keyName = "minimapPathColor",
-			name = "Minimap path lines color",
-			description = "Color of the trail path lines on the minimap."
+		position = 6,
+		keyName = "minimapPathColor",
+		name = "Minimap path lines color",
+		description = "Color of the trail path lines on the minimap."
 	)
 	default Color getMinimapPathColor()
 	{
@@ -80,10 +80,10 @@ public interface HerbiAfkConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 7,
-			keyName = "highlightHerbiTile",
-			name = "Highlight herbiboar tile",
-			description = "Highlights herbiboar tile at the end of the trail."
+		position = 7,
+		keyName = "highlightHerbiTile",
+		name = "Highlight herbiboar tile",
+		description = "Highlights herbiboar tile at the end of the trail."
 	)
 	default boolean highlightHerbiTile()
 	{
@@ -91,10 +91,10 @@ public interface HerbiAfkConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 8,
-			keyName = "highlightHerbiHull",
-			name = "Highlight herbiboar hull",
-			description = "Highlights herbiboar hull at the end of the trail."
+		position = 8,
+		keyName = "highlightHerbiHull",
+		name = "Highlight herbiboar hull",
+		description = "Highlights herbiboar hull at the end of the trail."
 	)
 	default boolean highlightHerbiHull()
 	{
@@ -102,10 +102,10 @@ public interface HerbiAfkConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 9,
-			keyName = "highlightHerbiOutline",
-			name = "Highlight herbiboar outline",
-			description = "Highlights herbiboar outline at the end of the trail."
+		position = 9,
+		keyName = "highlightHerbiOutline",
+		name = "Highlight herbiboar outline",
+		description = "Highlights herbiboar outline at the end of the trail."
 	)
 	default boolean highlightHerbiOutline()
 	{
@@ -114,10 +114,10 @@ public interface HerbiAfkConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-			position = 10,
-			keyName = "herbiboarColor",
-			name = "Herbiboar highlight color",
-			description = "Color of the herbiboar highlight."
+		position = 10,
+		keyName = "herbiboarColor",
+		name = "Herbiboar highlight color",
+		description = "Color of the herbiboar highlight."
 	)
 	default Color getHerbiboarColor()
 	{
@@ -125,12 +125,34 @@ public interface HerbiAfkConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 11,
-			keyName = "pathRelativeToPlayer",
-			name = "Path relative to player",
-			description = "Make the trail path line relative to the player."
+		position = 11,
+		keyName = "pathRelativeToPlayer",
+		name = "Path relative to player",
+		description = "Make the trail path line relative to the player."
 	)
 	default boolean pathRelativeToPlayer()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		position = 12,
+		keyName = "dynamicMenuEntrySwap",
+		name = "Dynamically swap trail menu entries",
+		description = "Swap menu entries to only make the correct trail clickable."
+	)
+	default boolean dynamicMenuEntrySwap()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		position = 13,
+		keyName = "npcMenuEntrySwap",
+		name = "Hide fossil island npcs menu entries",
+		description = "Hide fungi, zygomite and crab interaction menus."
+	)
+	default boolean npcMenuEntrySwap()
 	{
 		return true;
 	}
