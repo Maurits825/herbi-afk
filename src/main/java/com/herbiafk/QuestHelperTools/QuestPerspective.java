@@ -37,7 +37,8 @@ import net.runelite.api.Varbits;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.ComponentID;
+
 
 public class QuestPerspective
 {
@@ -145,18 +146,19 @@ public class QuestPerspective
         Widget minimapDrawWidget;
         if (client.isResized())
         {
-            if (client.getVar(Varbits.SIDE_PANELS) == 1)
+            if (client.getVarbitValue(Varbits.SIDE_PANELS) == 1)
             {
-                minimapDrawWidget = client.getWidget(WidgetInfo.RESIZABLE_MINIMAP_DRAW_AREA);
+
+                minimapDrawWidget = client.getWidget(ComponentID.RESIZABLE_VIEWPORT_BOTTOM_LINE_MINIMAP_DRAW_AREA);
             }
             else
             {
-                minimapDrawWidget = client.getWidget(WidgetInfo.RESIZABLE_MINIMAP_STONES_DRAW_AREA);
+                minimapDrawWidget = client.getWidget(ComponentID.RESIZABLE_VIEWPORT_MINIMAP_DRAW_AREA);
             }
         }
         else
         {
-            minimapDrawWidget = client.getWidget(WidgetInfo.FIXED_VIEWPORT_MINIMAP_DRAW_AREA);
+            minimapDrawWidget = client.getWidget(ComponentID.FIXED_VIEWPORT_MINIMAP_DRAW_AREA);
         }
 
         if (minimapDrawWidget == null)
