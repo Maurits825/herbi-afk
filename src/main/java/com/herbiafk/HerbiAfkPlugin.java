@@ -133,7 +133,11 @@ public class HerbiAfkPlugin extends Plugin
 	{
 		if (!isInHerbiboarArea())
 		{
-			herbiState = HerbiState.IDLE;
+			if (herbiState != HerbiState.IDLE)
+			{
+				resetTrailData();
+				herbiState = HerbiState.IDLE;
+			}
 			return;
 		}
 
