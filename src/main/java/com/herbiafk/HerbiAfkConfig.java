@@ -1,11 +1,10 @@
 package com.herbiafk;
 
+import java.awt.Color;
 import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-
-import java.awt.Color;
 
 @ConfigGroup("herbiafk")
 public interface HerbiAfkConfig extends Config
@@ -116,7 +115,7 @@ public interface HerbiAfkConfig extends Config
 	@ConfigItem(
 		position = 10,
 		keyName = "herbiboarColor",
-		name = "Herbiboar highlight color",
+		name = "Herbiboar highlight",
 		description = "Color of the herbiboar highlight."
 	)
 	default Color getHerbiboarColor()
@@ -139,7 +138,7 @@ public interface HerbiAfkConfig extends Config
 		position = 12,
 		keyName = "dynamicMenuEntrySwap",
 		name = "Dynamically swap trail menu entries",
-		description = "Swap menu entries to only make the correct trail clickable."
+		description = "Swap menu entries to only make the next correct object clickable."
 	)
 	default boolean dynamicMenuEntrySwap()
 	{
@@ -155,5 +154,16 @@ public interface HerbiAfkConfig extends Config
 	default boolean npcMenuEntrySwap()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+		position = 14,
+		keyName = "noLootMode",
+		name = "No loot mode",
+		description = "Skip the step of looting herbi."
+	)
+	default boolean noLootMode()
+	{
+		return false;
 	}
 }

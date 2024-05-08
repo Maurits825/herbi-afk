@@ -1,8 +1,11 @@
 package com.herbiafk;
 
 import com.google.inject.Provides;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 import javax.inject.Inject;
-
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
@@ -26,11 +29,6 @@ import net.runelite.client.plugins.herbiboars.HerbiboarPlugin;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
-
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
 
 @Slf4j
 @PluginDescriptor(
@@ -232,7 +230,14 @@ public class HerbiAfkPlugin extends Plugin
 			String message = Text.sanitize(Text.removeTags(event.getMessage()));
 			if (message.contains(HERBI_STUN))
 			{
-				herbiState = HerbiState.STUNNED;
+				if (config.noLootMode())
+				{
+					herbiState = HerbiState.FINDING_START;
+				}
+				else
+				{
+					herbiState = HerbiState.STUNNED;
+				}
 			}
 			else if (message.contains(HERBI_KC) || message.contains(HERBI_CIRCLES))
 			{
@@ -253,6 +258,11 @@ public class HerbiAfkPlugin extends Plugin
 		if (config.dynamicMenuEntrySwap())
 		{
 			swapTrailMenuEntries(event);
+
+			if (config.noLootMode() && herbiState == HerbiState.FINDING_START && event.getTarget().contains(HERBIBOAR_NAME))
+			{
+				event.getMenuEntry().setDeprioritized(true);
+			}
 		}
 		if (config.npcMenuEntrySwap())
 		{
