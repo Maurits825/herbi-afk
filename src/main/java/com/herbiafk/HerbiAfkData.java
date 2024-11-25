@@ -32,6 +32,6 @@ public class HerbiAfkData
 	};
 
 	public static final String[] NPC_MENU_ENTRY_TARGETS = new String[]{
-		"Ancient Fungi", "Ancient Zygomite", "Ammonite Crab", "Tool Leprechaun"
+		"Ancient Fungi", "Ancient Zygomite", "Ammonite Crab", "Tool Leprechaun", "Tree patch", "Teak tree", "Mahogany tree"
 	};
 }
