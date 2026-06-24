@@ -36,8 +36,8 @@ import net.runelite.api.RenderOverview;
 import net.runelite.api.Varbits;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.ComponentID;
 
 
 public class QuestPerspective
@@ -149,16 +149,16 @@ public class QuestPerspective
             if (client.getVarbitValue(Varbits.SIDE_PANELS) == 1)
             {
 
-                minimapDrawWidget = client.getWidget(ComponentID.RESIZABLE_VIEWPORT_BOTTOM_LINE_MINIMAP_DRAW_AREA);
+                minimapDrawWidget = client.getWidget(InterfaceID.ToplevelPreEoc.MINIMAP);
             }
             else
             {
-                minimapDrawWidget = client.getWidget(ComponentID.RESIZABLE_VIEWPORT_MINIMAP_DRAW_AREA);
+                minimapDrawWidget = client.getWidget(InterfaceID.ToplevelOsrsStretch.MINIMAP);
             }
         }
         else
         {
-            minimapDrawWidget = client.getWidget(ComponentID.FIXED_VIEWPORT_MINIMAP_DRAW_AREA);
+            minimapDrawWidget = client.getWidget(InterfaceID.Toplevel.MINIMAP);
         }
 
         if (minimapDrawWidget == null)
@@ -166,7 +166,7 @@ public class QuestPerspective
             return null;
         }
 
-        final int angle = client.getMapAngle() & 0x7FF;
+        final int angle = client.getCameraYawTarget() & 0x7FF;
 
         final int sin = Perspective.SINE[angle];
         final int cos = Perspective.COSINE[angle];
