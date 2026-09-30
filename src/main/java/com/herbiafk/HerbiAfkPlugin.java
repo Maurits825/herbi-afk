@@ -23,8 +23,8 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.npcoverlay.HighlightedNpc;
 import net.runelite.client.game.npcoverlay.NpcOverlayService;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.herbiboars.HerbiboarPlugin;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
@@ -34,7 +34,6 @@ import net.runelite.client.util.Text;
 @PluginDescriptor(
 	name = "Herbi AFK"
 )
-@PluginDependency(HerbiboarPlugin.class)
 public class HerbiAfkPlugin extends Plugin
 {
 	@Inject
@@ -54,10 +53,14 @@ public class HerbiAfkPlugin extends Plugin
 	private HerbiAfkMinimapOverlay minimapOverlay;
 
 	@Inject
-	private HerbiboarPlugin herbiboarPlugin;
+	private PluginManager pluginManager;
 
 	@Inject
 	private NpcOverlayService npcOverlayService;
+
+	// Looked up from the PluginManager rather than injected: since RuneLite 1.13.0, @PluginDependency
+	// requires the dependency to expose services, which the built-in Herbiboar plugin does not.
+	private HerbiboarPlugin herbiboarPlugin;
 
 	@Getter
 	private List<WorldPoint> pathLinePoints = new ArrayList<>();
@@ -86,6 +89,16 @@ public class HerbiAfkPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
+		herbiboarPlugin = pluginManager.getPlugins().stream()
+			.filter(HerbiboarPlugin.class::isInstance)
+			.map(HerbiboarPlugin.class::cast)
+			.findFirst()
+			.orElse(null);
+		if (herbiboarPlugin == null)
+		{
+			log.warn("Herbiboar plugin not found, Herbi AFK will be inactive");
+		}
+
 		overlayManager.add(overlay);
 		overlayManager.add(minimapOverlay);
 
@@ -105,6 +118,7 @@ public class HerbiAfkPlugin extends Plugin
 		npcOverlayService.unregisterHighlighter(isHerbiboar);
 
 		resetTrailData();
+		herbiboarPlugin = null;
 	}
 
 	@Subscribe
@@ -367,7 +381,10 @@ public class HerbiAfkPlugin extends Plugin
 
 	public boolean isInHerbiboarArea()
 	{
-		return herbiboarPlugin.isInHerbiboarArea();
+		// The Herbiboar plugin's state is only kept up to date while it is running
+		return herbiboarPlugin != null
+			&& pluginManager.isPluginActive(herbiboarPlugin)
+			&& herbiboarPlugin.isInHerbiboarArea();
 	}
 
 	@Provides
